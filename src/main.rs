@@ -2,6 +2,7 @@ use std::fs::File;
 use std::io::{self, BufRead};
 use std::path::Path;
 use eframe::egui;
+use std::process::Command;
 
 struct ShortcutApp {
     shortcuts: Vec<(String, String)>,
@@ -19,7 +20,9 @@ impl eframe::App for ShortcutApp {
                     for (path, alias) in &self.shortcuts {
                         ui.horizontal(|ui| {
                             if ui.button(alias).clicked() {
-                                println!("Clicked alias: {}", alias);
+                                if let Err(err) = open_file(path) {
+                                    eprintln!("Failed to open file: {}", err);
+                                }
                             }
                             ui.label(format!("Path: {}", path));
                         });
@@ -29,21 +32,18 @@ impl eframe::App for ShortcutApp {
     }
 }
 
-
-fn draw_list(ui: &mut egui::Ui, shortcuts: &[(String, String)]) {
-    // Add a heading and align content in the center
-    ui.vertical_centered(|ui| {
-        ui.heading("Shortcut List");
-        // Render each shortcut with a button and label
-        for (path, alias) in shortcuts {
-            ui.horizontal(|ui| {
-                if ui.button(alias).clicked() {
-                    println!("Clicked alias: {}", alias);
-                }
-                ui.label(format!("Path: {}", path));
-            });
-        }
-    });
+/// Opens the given file or directory using the default system application.
+fn open_file(path: &str) -> io::Result<()> {
+    if cfg!(target_os = "windows") {
+        Command::new("cmd").args(&["/C", "start", path]).spawn()?;
+    } else if cfg!(target_os = "macos") {
+        Command::new("open").arg(path).spawn()?;
+    } else if cfg!(target_os = "linux") {
+        Command::new("xdg-open").arg(path).spawn()?;
+    } else {
+        eprintln!("Unsupported operating system");
+    }
+    Ok(())
 }
 
 fn read_shortcuts(file_path: &str) -> Vec<(String, String)> {
@@ -53,7 +53,9 @@ fn read_shortcuts(file_path: &str) -> Vec<(String, String)> {
             for line in contents.lines() {
                 let parts: Vec<&str> = line.splitn(2, "::").collect(); // Use "::" as the delimiter
                 if parts.len() == 2 {
-                    shortcuts.push((parts[0].trim().to_string(), parts[1].trim().to_string()));
+                    let path = parts[0].trim().trim_matches('"').to_string(); // Remove extra quotes
+                    let alias = parts[1].trim().to_string();
+                    shortcuts.push((path, alias));
                 } else {
                     println!("Skipping invalid line: {}", line);
                 }
@@ -67,13 +69,6 @@ fn read_shortcuts(file_path: &str) -> Vec<(String, String)> {
     shortcuts
 }
 
-fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
-where
-    P: AsRef<Path>,
-{
-    let file = File::open(filename)?;
-    Ok(io::BufReader::new(file).lines())
-}
 
 fn main() -> Result<(), eframe::Error> {
     let options = eframe::NativeOptions::default();
