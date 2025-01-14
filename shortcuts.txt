@@ -1,8 +1,8 @@
-"C:\Users\arivw\Desktop\Marvel Rivals.url"
-"C:\Users\arivw\Desktop\UncleTomsCabin.pdf"
-"C:\Users\arivw\Desktop\Obsidian.lnk"
-"C:\Users\Public\Desktop\EA.lnk"
-"C:\Users\Public\Desktop\Steam.lnk"
-"C:\Users\arivw\Desktop\Epic Games Launcher.lnk"
-"C:\Users\arivw\Desktop\Webex.lnk"
-"C:\Users\arivw\Desktop\Brawlhalla.url"
+"C:\Users\arivw\Desktop\Marvel Rivals.url"::rivals
+"C:\Users\arivw\Desktop\UncleTomsCabin.pdf"::UncleTomsCabin
+"C:\Users\arivw\Desktop\Obsidian.lnk"::Obsidian
+"C:\Users\Public\Desktop\EA.lnk"::EA
+"C:\Users\Public\Desktop\Steam.lnk"::Steam
+"C:\Users\arivw\Desktop\Epic Games Launcher.lnk"::Epicgames
+"C:\Users\arivw\Desktop\Webex.lnk"::Webex
+"C:\Users\arivw\Desktop\Brawlhalla.url"::Brawl
